@@ -1,22 +1,13 @@
 package main
 
-import (
-	"errors"
-)
-
-var alertMap = make(map[int][]Alert)
-
-// FakeRepository is a fake repository
-type FakeRepository struct{}
-
-func (fr FakeRepository) findByOwnerID(id int) ([]Alert, error) {
-	return []Alert{Alert{}}, nil
+func FindByOwnerIDSuccess(id int) ([]Alert, error) {
+	return []Alert{sampleAlert}, nil
 }
 
-func (fr FakeRepository) findByName(id int, name string) (Alert, error) {
-	return Alert{}, nil
+func UpsertAlertSuccess(a Alert) (Alert, error) {
+	return a, nil
 }
 
-func (fr FakeRepository) upsert(a Alert) (Alert, error) {
-	return Alert{}, errors.New("Could NOT upsert Alert")
+func FindByIDSuccess(id int) (Alert, error) {
+	return sampleAlert, nil
 }

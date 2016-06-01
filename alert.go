@@ -2,6 +2,7 @@ package main
 
 import "time"
 
+// Status
 const (
 	Active   = 1
 	Deactive = 2
@@ -9,6 +10,7 @@ const (
 
 // Alert is the primary entity of this microservice
 type Alert struct {
+	ID                 int
 	OwnerID            int       `cql:"owner_id"`
 	Name               string    `cql:"name"`
 	RequiredCriteria   string    `cql:"required_criteria"`
@@ -27,6 +29,7 @@ func (a *Alert) validate() bool {
 }
 
 var sampleAlert = Alert{
+	ID:                 1,
 	OwnerID:            1,
 	Name:               "Test Alert",
 	RequiredCriteria:   "ThoughtWorks",

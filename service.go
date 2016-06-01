@@ -4,17 +4,15 @@ import (
 	"errors"
 )
 
-func findUserAlerts(r Repository, userID int) []Alert {
-	v, _ := r.findByOwnerID(userID)
-	// TODO catch errors
-	return v
-}
-
-func saveAlert(r Repository, a Alert) (Alert, error) {
+var CreateAlert = func(a Alert) (Alert, error) {
 	if !a.validate() {
 		return Alert{}, errors.New("Validation failed")
 	}
+	a, err := UpsertAlert(a)
+	return a, err
+}
 
-	v, err := r.upsert(a)
+var UpsertAlert = func(a Alert) (Alert, error) {
+	v, err := PersistAlert(a)
 	return v, err
 }

@@ -5,14 +5,21 @@ import (
 	"testing"
 )
 
-var sr = FakeRepository{}
+func TestWhenIInsertValidAlert_ShouldReturnOK(t *testing.T) {
+	UpsertAlert = UpsertAlertSuccess
 
-func TestWhenIInsertInvalidAlert_ShouldReturnError(t *testing.T) {
-	_, err := saveAlert(sr, Alert{RequiredCriteria: ""})
-	assert.EqualError(t, err, "Validation failed")
+	a, err := CreateAlert(sampleAlert)
+	assert.Equal(t, a.Name, sampleAlert.Name, "Create should return OK for valid return")
+	assert.Nil(t, err, nil, "Create should not return OK for valid return")
 }
 
-func TestWhenIInsertInvalidNamedAlert_ShouldReturnError(t *testing.T) {
+/*func createAlarm(a Alert){
+validateAlert(a);
+alert := saveAlert(a);
+
+}*/
+
+/*func TestWhenIInsertInvalidNamedAlert_ShouldReturnError(t *testing.T) {
 	_, err := saveAlert(sr, Alert{Name: ""})
 	assert.EqualError(t, err, "Validation failed")
-}
+}*/

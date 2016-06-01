@@ -9,9 +9,6 @@ var alertTable gocassa.Table
 var cassandraClusterNodes = []string{"192.168.1.200"}
 var cassandraKeySpaceName = "marketwatcher"
 
-// CassandraRepository is a fake repository
-type CassandraRepository struct{}
-
 func getAlertTable() gocassa.Table {
 	if alertTable != nil {
 		return alertTable
@@ -34,7 +31,7 @@ func getAlertTable() gocassa.Table {
 	return alertTable
 }
 
-func (cr CassandraRepository) find(id int) (Alert, error) {
+func find(id int) (Alert, error) {
 	result := Alert{}
 
 	if err := getAlertTable().Where(gocassa.Eq("id", id)).ReadOne(&result).Run(); err != nil {
@@ -44,7 +41,6 @@ func (cr CassandraRepository) find(id int) (Alert, error) {
 	return result, nil
 }
 
-func (cr CassandraRepository) upsert(a Alert) (Alert, error) {
-
+func PersistAlert(a Alert) (Alert, error) {
 	return Alert{}, nil
 }
