@@ -1,29 +1,38 @@
 package main
 
+import "time"
+
+const (
+	Active   = 1
+	Deactive = 2
+)
+
 // Alert is the primary entity of this microservice
 type Alert struct {
-	id                 int      `cql:"id"`
-	name               string   `cql:"name"`
-	requiredCriteria   []string `cql:"required_criteria"`
-	niceToHaveCriteria []string `cql:"nice_to_have_criteria"`
-	excludedCriteria   []string `cql:"excluded_criteria"`
-	threshold          int      `cql:"threshold"`
-	ownerID            int64    `cql:"owner_id"`
+	OwnerID            int       `cql:"owner_id"`
+	Name               string    `cql:"name"`
+	RequiredCriteria   string    `cql:"required_criteria"`
+	NiceToHaveCriteria string    `cql:"nice_to_have_criteria"`
+	ExcludedCriteria   string    `cql:"excluded_criteria"`
+	Threshold          int       `cql:"threshold"`
+	Status             int       `cql:"status"`
+	UpdateDate         time.Time `cql:"update_date"`
 }
 
 func (a *Alert) validate() bool {
-	return a.id > 0 &&
-		a.name != "" &&
-		a.requiredCriteria != nil && len(a.requiredCriteria) > 0 &&
-		a.threshold > 0 && a.ownerID > 0
+	return a.OwnerID > 0 &&
+		a.Name != "" &&
+		a.RequiredCriteria != "" &&
+		a.Threshold > 0
 }
 
 var sampleAlert = Alert{
-	id:                 1,
-	name:               "Test Alert",
-	requiredCriteria:   []string{"ali", "veli"},
-	niceToHaveCriteria: []string{"ali", "veli"},
-	excludedCriteria:   []string{"ali", "veli"},
-	threshold:          1000,
-	ownerID:            1,
+	OwnerID:            1,
+	Name:               "Test Alert",
+	RequiredCriteria:   "ThoughtWorks",
+	NiceToHaveCriteria: "good,best office",
+	ExcludedCriteria:   "bad",
+	Threshold:          1000,
+	Status:             Active,
+	UpdateDate:         time.Now(),
 }

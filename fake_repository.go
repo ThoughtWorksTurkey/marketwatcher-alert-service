@@ -4,33 +4,19 @@ import (
 	"errors"
 )
 
-var alertMap = make(map[int]Alert)
+var alertMap = make(map[int][]Alert)
 
 // FakeRepository is a fake repository
 type FakeRepository struct{}
 
-func (fr FakeRepository) find(id int) (Alert, error) {
-	v, ok := alertMap[id]
+func (fr FakeRepository) findByOwnerID(id int) ([]Alert, error) {
+	return []Alert{Alert{}}, nil
+}
 
-	if ok {
-		return v, nil
-	}
-
-	return v, errors.New("Could NOT find Alert")
+func (fr FakeRepository) findByName(id int, name string) (Alert, error) {
+	return Alert{}, nil
 }
 
 func (fr FakeRepository) upsert(a Alert) (Alert, error) {
-	if !a.validate() {
-		return Alert{}, errors.New("Validation failed")
-	}
-
-	alertMap[a.id] = a
-
-	v, ok := alertMap[a.id]
-
-	if ok {
-		return v, nil
-	}
-
-	return v, errors.New("Could NOT upsert Alert")
+	return Alert{}, errors.New("Could NOT upsert Alert")
 }

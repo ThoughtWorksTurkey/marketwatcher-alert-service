@@ -1,4 +1,4 @@
-// +build !unit
+// +build integration
 
 package main
 
@@ -9,14 +9,14 @@ import (
 
 var cr = CassandraRepository{}
 
-func TestWhenIFindWithID1_ShoudReturnSucessful(t *testing.T) {
-	actualValue, _ := cr.find(1)
-	assert.Equal(t, sampleAlert, actualValue, "Must return correct Alert")
+func TestWhenIUpsert_ShoudReturnSucessful(t *testing.T) {
+	inserted, err := cr.upsert(sampleAlert)
+	assert.NotEqual(t, inserted.UpdateDate, sampleAlert.UpdateDate "Update date should not be null when inserted")
+	assert.NoError(t, err)
 }
 
-/*
-func TestWhenIUpsertAlert_ShouldReturnOK(t *testing.T) {
-	insertedAlert, err := cr.upsert(sampleAlert)
-	assert.Equal(t, sampleAlert, insertedAlert, "Insert alert to map should be successful")
-	assert.Nil(t, err, "Error must be nil")
-}*/
+func TestWhenIFindWithID1_ShoudReturnSucessful(t *testing.T) {
+	actualValue, err := cr.find(1)
+	assert.Equal(t, sampleAlert, actualValue, "Must return correct Alert")
+	assert.NoError(t, err)
+}

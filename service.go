@@ -4,8 +4,9 @@ import (
 	"errors"
 )
 
-func findAlertByID(r Repository, id int) Alert {
-	v, _ := r.find(id)
+func findUserAlerts(r Repository, userID int) []Alert {
+	v, _ := r.findByOwnerID(userID)
+	// TODO catch errors
 	return v
 }
 

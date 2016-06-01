@@ -1,3 +1,5 @@
+// +build unit
+
 package main
 
 import (
@@ -14,20 +16,20 @@ func TestWhenIUpsertAlert_ShouldReturnOK(t *testing.T) {
 }
 
 func TestWhenIUpsertAlertWithNewName_ShouldReturnOK(t *testing.T) {
-	alert, _ := fr.find(1)
-	alert.name = "Alert 1"
+	alert, _ := fr.findByOwnerID(1)
+	alert.Name = "Alert 1"
 	updatedAlert, _ := fr.upsert(alert)
-	assert.Equal(t, updatedAlert.name, alert.name, "Update alert must return successful")
+	assert.Equal(t, updatedAlert.Name, alert.Name, "Update alert must return successful")
 }
 
 func TestWhenIFindAlertWithID1_ShoudReturnSucessful(t *testing.T) {
 	fr.upsert(sampleAlert)
-	actualValue, _ := fr.find(1)
+	actualValue, _ := fr.findByOwnerID(1)
 	assert.Equal(t, sampleAlert, actualValue, "Must return correct Alert")
 }
 
 func TestWhenIFindAlertWithoutExistingID_ShouldReturnNothing(t *testing.T) {
 	expected := Alert{}
-	actual, _ := fr.find(666)
+	actual, _ := fr.findByOwnerID(666)
 	assert.Equal(t, expected, actual, "Must return nothing")
 }
