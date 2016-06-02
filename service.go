@@ -13,6 +13,6 @@ var CreateAlert = func(a Alert) (Alert, error) {
 }
 
 var UpsertAlert = func(a Alert) (Alert, error) {
-	v, err := PersistAlert(a)
+	v, err := UpsertAlertCassandra(a)
 	return v, err
 }

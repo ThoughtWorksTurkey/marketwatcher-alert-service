@@ -5,21 +5,112 @@ import (
 	"testing"
 )
 
+var SampleAlert = Alert{
+	ID:                 1,
+	OwnerID:            1,
+	Name:               "Test Alert",
+	RequiredCriteria:   "TW,ThoughtWorks,Thought Works,Thoughtworks",
+	NiceToHaveCriteria: "good,best office",
+	ExcludedCriteria:   "bad,sucks,not good enough",
+	Threshold:          1000,
+	Status:             Active,
+}
+
 func TestWhenIInsertValidAlert_ShouldReturnOK(t *testing.T) {
 	UpsertAlert = UpsertAlertSuccess
 
-	a, err := CreateAlert(sampleAlert)
-	assert.Equal(t, a.Name, sampleAlert.Name, "Create should return OK for valid return")
+	a, err := CreateAlert(SampleAlert)
+	assert.Equal(t, a.Name, SampleAlert.Name, "Create should return OK for valid return")
 	assert.Nil(t, err, nil, "Create should not return OK for valid return")
 }
 
-/*func createAlarm(a Alert){
-validateAlert(a);
-alert := saveAlert(a);
+func TestWhenIInsertAlertWithoutName_ShouldReturnError(t *testing.T) {
+	UpsertAlert = UpsertAlertSuccess
+	alertWithoutName := SampleAlert
+	alertWithoutName.Name = ""
 
-}*/
+	a, err := CreateAlert(alertWithoutName)
+	assert.EqualError(t, err, "Validation failed", "Create alert without name should return error")
+	assert.Equal(t, Alert{}, a, "Create alert without name should return error")
+}
 
-/*func TestWhenIInsertInvalidNamedAlert_ShouldReturnError(t *testing.T) {
-	_, err := saveAlert(sr, Alert{Name: ""})
-	assert.EqualError(t, err, "Validation failed")
-}*/
+func TestWhenIInsertAlertWithoutOwnerID_ShouldReturnError(t *testing.T) {
+	UpsertAlert = UpsertAlertSuccess
+	alertWithoutOwnerID := SampleAlert
+	alertWithoutOwnerID.OwnerID = -2
+
+	a, err := CreateAlert(alertWithoutOwnerID)
+	assert.EqualError(t, err, "Validation failed", "Create alert without owner id should return error")
+	assert.Equal(t, Alert{}, a, "Create alert without owner id should return error")
+}
+
+func TestWhenIInsertAlertWithNameLengthIsMoreThanMax_ShouldReturnError(t *testing.T) {
+	UpsertAlert = UpsertAlertSuccess
+	alert := SampleAlert
+	alert.Name = "ayse jkajshdkjashdjsahd kashdjashdkjahsdkjhaskjdhaksjhdkjashd jashdkjahsdkjahsdjhsd"
+
+	a, err := CreateAlert(alert)
+	assert.EqualError(t, err, "Validation failed", "Create alert with name length is more than max should return error")
+	assert.Equal(t, Alert{}, a, "Create alert with name length is more than max should return error")
+}
+
+func TestWhenIInsertTurkishCharacterForCriteria_ShouldReturnOk(t *testing.T) {
+	UpsertAlert = UpsertAlertSuccess
+
+	alert := SampleAlert
+	alert.RequiredCriteria = "ayçe çç öö ğ ü ı şşşşşşş"
+
+	a, err := CreateAlert(SampleAlert)
+	assert.Equal(t, a.Name, SampleAlert.Name, "Create alert with turkish character for criteria should return OK")
+	assert.Nil(t, err, nil, "Create alert with turkish character for criteria should not return OK")
+}
+
+func TestWhenIInsertNonAlphanumericCharacterForCriteria_ShouldReturnError(t *testing.T) {
+	UpsertAlert = UpsertAlertSuccess
+	alert := SampleAlert
+	alert.RequiredCriteria = ">>> < | ~~~ ]"
+
+	a, err := CreateAlert(alert)
+	assert.EqualError(t, err, "Validation failed", "Create alert with non alphanumeric creiteria should return error")
+	assert.Equal(t, Alert{}, a, "Create alert with  non alphanumeric creiteria should return error")
+}
+
+func TestWhenIInsertRequiredCriteriaLongerThan140_ShouldReturnError(t *testing.T) {
+	UpsertAlert = UpsertAlertSuccess
+	alert := SampleAlert
+	alert.RequiredCriteria = "aaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqw"
+
+	a, err := CreateAlert(alert)
+	assert.EqualError(t, err, "Validation failed", "Create alert with long required criteria should return error")
+	assert.Equal(t, Alert{}, a, "Create alert with long required criteria should return error")
+}
+
+func TestWhenIInsertNiceToHaveCriteriaLongerThan140_ShouldReturnError(t *testing.T) {
+	UpsertAlert = UpsertAlertSuccess
+	alert := SampleAlert
+	alert.NiceToHaveCriteria = "aaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqw"
+
+	a, err := CreateAlert(alert)
+	assert.EqualError(t, err, "Validation failed", "Create alert with long nice-to-have criteria should return error")
+	assert.Equal(t, Alert{}, a, "Create alert with long nice-to-have criteria should return error")
+}
+
+func TestWhenIInsertExcludedCriteriaLongerThan140_ShouldReturnError(t *testing.T) {
+	UpsertAlert = UpsertAlertSuccess
+	alert := SampleAlert
+	alert.ExcludedCriteria = "aaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqw"
+
+	a, err := CreateAlert(alert)
+	assert.EqualError(t, err, "Validation failed", "Create alert with long excluded criteria should return error")
+	assert.Equal(t, Alert{}, a, "Create alert with long excluded criteria should return error")
+}
+
+func TestWhenIInsertAlertWithInvalidThreshold_ShouldReturnError(t *testing.T) {
+	UpsertAlert = UpsertAlertSuccess
+	alert := SampleAlert
+	alert.Threshold = 2000000
+
+	a, err := CreateAlert(alert)
+	assert.EqualError(t, err, "Validation failed", "Create alert with greater than max valued threshold should return error")
+	assert.Equal(t, Alert{}, a, "Create alert with greater than max valued threshold should return error")
+}

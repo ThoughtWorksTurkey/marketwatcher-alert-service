@@ -7,16 +7,15 @@ import (
 	"testing"
 )
 
-var cr = CassandraRepository{}
-
 func TestWhenIUpsert_ShoudReturnSucessful(t *testing.T) {
-	inserted, err := cr.upsert(sampleAlert)
-	assert.NotEqual(t, inserted.UpdateDate, sampleAlert.UpdateDate "Update date should not be null when inserted")
+	inserted, err := UpsertAlertCassandra(SampleAlert)
+	assert.Equal(t, inserted, SampleAlert, "Upsert should return OK")
 	assert.NoError(t, err)
 }
 
+/*
 func TestWhenIFindWithID1_ShoudReturnSucessful(t *testing.T) {
-	actualValue, err := cr.find(1)
-	assert.Equal(t, sampleAlert, actualValue, "Must return correct Alert")
+	actualValue, err := Find(1)
+	assert.Equal(t, SampleAlert, actualValue, "Must return correct Alert")
 	assert.NoError(t, err)
-}
+}*/

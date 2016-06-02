@@ -23,15 +23,14 @@ func getAlertTable() gocassa.Table {
 	alertTable = keySpace.Table(
 		"alert",
 		&Alert{},
-		gocassa.Keys{PartitionKeys: []string{"owner_id", "name"}},
+		gocassa.Keys{PartitionKeys: []string{"id"}},
 	)
-
-	alertTable.CreateIfNotExist()
 
 	return alertTable
 }
 
-func find(id int) (Alert, error) {
+// Find is etc..
+func Find(id int) (Alert, error) {
 	result := Alert{}
 
 	if err := getAlertTable().Where(gocassa.Eq("id", id)).ReadOne(&result).Run(); err != nil {
@@ -41,6 +40,11 @@ func find(id int) (Alert, error) {
 	return result, nil
 }
 
-func PersistAlert(a Alert) (Alert, error) {
-	return Alert{}, nil
+// UpsertAlertCassandra is upsert to cassandra
+func UpsertAlertCassandra(a Alert) (Alert, error) {
+	if err := getAlertTable().Set(a).Run(); err != nil {
+		return Alert{}, err
+	}
+
+	return Find(a.ID)
 }
