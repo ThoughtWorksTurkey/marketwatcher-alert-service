@@ -6,12 +6,15 @@ import (
 )
 
 func main() {
-	beego.Router("/alerts", &AlertController{})
+	beego.Router("/alerts/owner_id/:owner_id([0-9]+)", &AlertController{}, "get:GetAlertsOfOwner")
+	beego.Router("/alerts", &AlertController{}, "post:PostNewAlert")
+
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
-		AllowOrigins: []string{"http://*"},
-		AllowMethods: []string{"PUT", "PATCH", "GET", "POST", "OPTIONS"},
-		AllowHeaders: []string{"Origin", "Content-Length", "Content-Type"},
+		AllowOrigins:     []string{"http://*"},
+		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type"},
 		AllowCredentials: true,
 	}))
+
 	beego.Run()
 }

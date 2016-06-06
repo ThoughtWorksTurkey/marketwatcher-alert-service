@@ -1,12 +1,15 @@
 package main
 
 import (
-	"github.com/hailocab/gocassa"
 	"log"
+	"os"
+	"strings"
+
+	"github.com/hailocab/gocassa"
 )
 
 var alertTable gocassa.Table
-var cassandraClusterNodes = []string{"192.168.1.200"}
+var cassandraClusterNodes = strings.Split(os.Getenv("CASSANDRA_NODES"), ",")
 var cassandraKeySpaceName = "marketwatcher"
 
 func getAlertTable() gocassa.Table {
@@ -29,8 +32,7 @@ func getAlertTable() gocassa.Table {
 	return alertTable
 }
 
-
-var find = func (id int) (Alert, error) {
+var find = func(id int) (Alert, error) {
 	result := Alert{}
 
 	if err := getAlertTable().Where(gocassa.Eq("id", id)).ReadOne(&result).Run(); err != nil {
@@ -40,8 +42,17 @@ var find = func (id int) (Alert, error) {
 	return result, nil
 }
 
+var findByOwner = func(ownerID int) ([]Alert, error) {
+	results := []Alert{}
+	if err := getAlertTable().Where(gocassa.Eq("owner_id", ownerID)).Read(&results).Run(); err != nil {
+		return []Alert{}, err
+	}
+
+	return results, nil
+}
+
 // Upsert updates or inserts to cassandra
-var upsert = func (a Alert) (Alert, error) {
+var upsert = func(a Alert) (Alert, error) {
 	if err := getAlertTable().Set(a).Run(); err != nil {
 		return Alert{}, err
 	}

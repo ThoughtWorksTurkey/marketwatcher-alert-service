@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"strconv"
+
 	"github.com/astaxie/beego"
 )
 
@@ -11,12 +13,22 @@ type AlertController struct {
 }
 
 // Get is a receiver method
-func (alertReceiver *AlertController) Get() {
-	alertReceiver.Ctx.WriteString("hello get")
+func (alertReceiver *AlertController) GetAlertsOfOwner() {
+	requestedOwnerID, _ := strconv.Atoi(alertReceiver.Ctx.Input.Param(":owner_id"))
+
+	alerts, err := ListAlerts(requestedOwnerID)
+
+	if err != nil {
+		alertReceiver.Data["error"] = err
+		alertReceiver.ServeJSONWithStatus(404)
+	} else {
+		alertReceiver.Data["json"] = alerts
+		alertReceiver.ServeJSONWithStatus(200)
+	}
 }
 
 // Post is a receiver method
-func (alertReceiver *AlertController) Post() {
+func (alertReceiver *AlertController) PostNewAlert() {
 	var alert Alert
 	json.Unmarshal(alertReceiver.Ctx.Input.RequestBody, &alert)
 	createdAlert, err := CreateAlert(alert)
@@ -30,13 +42,9 @@ func (alertReceiver *AlertController) Post() {
 
 }
 
-// ServeJSONWithStatus encapsulates responsing with http status code
+// ServeJSONWithStatus decorates responses
 func (alertReceiver *AlertController) ServeJSONWithStatus(code int) {
-	alertReceiver.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	alertReceiver.Ctx.Output.Header("Content-Type", "application/json;charset=UTF-8")
-	if enablegzip, err := beego.AppConfig.Bool("enablegzip"); err == nil && enablegzip {
-		alertReceiver.Ctx.Output.Header("Content-Encoding", "gzip")
-	}
 	alertReceiver.Ctx.Output.SetStatus(code)
 	alertReceiver.ServeJSON()
 }

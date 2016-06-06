@@ -12,3 +12,6 @@ var CreateAlert = func(a Alert) (Alert, error) {
 	return a, err
 }
 
+var ListAlerts = func(ownerID int) ([]Alert, error) {
+	return findByOwner(ownerID)
+}
