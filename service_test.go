@@ -13,11 +13,11 @@ var SampleAlert = Alert{
 	NiceToHaveCriteria: "good,best office",
 	ExcludedCriteria:   "bad,sucks,not good enough",
 	Threshold:          1000,
-	Status:             Active,
+	Status:             ACTIVE,
 }
 
 func TestWhenIInsertValidAlert_ShouldReturnOK(t *testing.T) {
-	UpsertAlert = UpsertAlertSuccess
+	upsert = MockUpsert
 
 	a, err := CreateAlert(SampleAlert)
 	assert.Equal(t, a.Name, SampleAlert.Name, "Create should return OK for valid return")
@@ -25,7 +25,7 @@ func TestWhenIInsertValidAlert_ShouldReturnOK(t *testing.T) {
 }
 
 func TestWhenIInsertAlertWithoutName_ShouldReturnError(t *testing.T) {
-	UpsertAlert = UpsertAlertSuccess
+	upsert = MockUpsert
 	alertWithoutName := SampleAlert
 	alertWithoutName.Name = ""
 
@@ -35,7 +35,7 @@ func TestWhenIInsertAlertWithoutName_ShouldReturnError(t *testing.T) {
 }
 
 func TestWhenIInsertAlertWithoutOwnerID_ShouldReturnError(t *testing.T) {
-	UpsertAlert = UpsertAlertSuccess
+	upsert = MockUpsert
 	alertWithoutOwnerID := SampleAlert
 	alertWithoutOwnerID.OwnerID = -2
 
@@ -45,7 +45,7 @@ func TestWhenIInsertAlertWithoutOwnerID_ShouldReturnError(t *testing.T) {
 }
 
 func TestWhenIInsertAlertWithNameLengthIsMoreThanMax_ShouldReturnError(t *testing.T) {
-	UpsertAlert = UpsertAlertSuccess
+	upsert = MockUpsert
 	alert := SampleAlert
 	alert.Name = "ayse jkajshdkjashdjsahd kashdjashdkjahsdkjhaskjdhaksjhdkjashd jashdkjahsdkjahsdjhsd"
 
@@ -55,7 +55,7 @@ func TestWhenIInsertAlertWithNameLengthIsMoreThanMax_ShouldReturnError(t *testin
 }
 
 func TestWhenIInsertTurkishCharacterForCriteria_ShouldReturnOk(t *testing.T) {
-	UpsertAlert = UpsertAlertSuccess
+	upsert = MockUpsert
 
 	alert := SampleAlert
 	alert.RequiredCriteria = "ayçe çç öö ğ ü ı şşşşşşş"
@@ -66,7 +66,7 @@ func TestWhenIInsertTurkishCharacterForCriteria_ShouldReturnOk(t *testing.T) {
 }
 
 func TestWhenIInsertNonAlphanumericCharacterForCriteria_ShouldReturnError(t *testing.T) {
-	UpsertAlert = UpsertAlertSuccess
+	upsert = MockUpsert
 	alert := SampleAlert
 	alert.RequiredCriteria = ">>> < | ~~~ ]"
 
@@ -76,7 +76,7 @@ func TestWhenIInsertNonAlphanumericCharacterForCriteria_ShouldReturnError(t *tes
 }
 
 func TestWhenIInsertRequiredCriteriaLongerThan140_ShouldReturnError(t *testing.T) {
-	UpsertAlert = UpsertAlertSuccess
+	upsert = MockUpsert
 	alert := SampleAlert
 	alert.RequiredCriteria = "aaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqw"
 
@@ -86,7 +86,7 @@ func TestWhenIInsertRequiredCriteriaLongerThan140_ShouldReturnError(t *testing.T
 }
 
 func TestWhenIInsertNiceToHaveCriteriaLongerThan140_ShouldReturnError(t *testing.T) {
-	UpsertAlert = UpsertAlertSuccess
+	upsert = MockUpsert
 	alert := SampleAlert
 	alert.NiceToHaveCriteria = "aaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqw"
 
@@ -96,7 +96,7 @@ func TestWhenIInsertNiceToHaveCriteriaLongerThan140_ShouldReturnError(t *testing
 }
 
 func TestWhenIInsertExcludedCriteriaLongerThan140_ShouldReturnError(t *testing.T) {
-	UpsertAlert = UpsertAlertSuccess
+	upsert = MockUpsert
 	alert := SampleAlert
 	alert.ExcludedCriteria = "aaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqw"
 
@@ -106,7 +106,7 @@ func TestWhenIInsertExcludedCriteriaLongerThan140_ShouldReturnError(t *testing.T
 }
 
 func TestWhenIInsertAlertWithInvalidThreshold_ShouldReturnError(t *testing.T) {
-	UpsertAlert = UpsertAlertSuccess
+	upsert = MockUpsert
 	alert := SampleAlert
 	alert.Threshold = 2000000
 

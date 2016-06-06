@@ -1,7 +1,0 @@
-package main
-
-const (
-	MAX_LENGTH_FOR_CRITERIA = 140
-	MAX_LENGTH_FOR_NAME     = 32
-	MAX_THRESHOLD_VALUE     = 1000000
-)

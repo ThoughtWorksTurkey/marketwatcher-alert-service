@@ -5,10 +5,13 @@ import (
 	"strings"
 )
 
-// Status
+// Constants for Alert entity
 const (
-	Active   = 1
-	Deactive = 2
+	ACTIVE = 1
+	DEACTIVE = 2
+	MAX_LENGTH_FOR_CRITERIA = 140
+	MAX_LENGTH_FOR_NAME = 32
+	MAX_THRESHOLD_VALUE = 1000000
 )
 
 var alphanumericRegex = regexp.MustCompile("^[a-zA-Z0-9_\\s]*$")
@@ -27,16 +30,16 @@ type Alert struct {
 
 func (a *Alert) validate() bool {
 	return a.OwnerID > 0 &&
-		validateName(a) &&
-		validateRequiredCriteria(a) &&
-		validateOptionalCriteria(a.NiceToHaveCriteria) &&
-		validateOptionalCriteria(a.ExcludedCriteria) &&
-		validateThreshold(a.Threshold)
+	validateName(a) &&
+	validateRequiredCriteria(a) &&
+	validateOptionalCriteria(a.NiceToHaveCriteria) &&
+	validateOptionalCriteria(a.ExcludedCriteria) &&
+	validateThreshold(a.Threshold)
 }
 
 func validateName(a *Alert) bool {
 	return a.Name != "" && len(a.Name) <= MAX_LENGTH_FOR_NAME &&
-		alphanumericRegex.MatchString(a.Name)
+	alphanumericRegex.MatchString(a.Name)
 }
 
 func validateRequiredCriteria(a *Alert) bool {

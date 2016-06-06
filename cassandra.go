@@ -29,8 +29,8 @@ func getAlertTable() gocassa.Table {
 	return alertTable
 }
 
-// Find is etc..
-func Find(id int) (Alert, error) {
+
+var find = func (id int) (Alert, error) {
 	result := Alert{}
 
 	if err := getAlertTable().Where(gocassa.Eq("id", id)).ReadOne(&result).Run(); err != nil {
@@ -40,11 +40,11 @@ func Find(id int) (Alert, error) {
 	return result, nil
 }
 
-// UpsertAlertCassandra is upsert to cassandra
-func UpsertAlertCassandra(a Alert) (Alert, error) {
+// Upsert updates or inserts to cassandra
+var upsert = func (a Alert) (Alert, error) {
 	if err := getAlertTable().Set(a).Run(); err != nil {
 		return Alert{}, err
 	}
 
-	return Find(a.ID)
+	return find(a.ID)
 }
