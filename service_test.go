@@ -5,19 +5,8 @@ import (
 	"testing"
 )
 
-var SampleAlert = Alert{
-	ID:                 1,
-	OwnerID:            1,
-	Name:               "Test Alert",
-	RequiredCriteria:   "TW,ThoughtWorks,Thought Works,Thoughtworks",
-	NiceToHaveCriteria: "good,best office",
-	ExcludedCriteria:   "bad,sucks,not good enough",
-	Threshold:          1000,
-	Status:             ACTIVE,
-}
-
 func TestWhenIInsertValidAlert_ShouldReturnOK(t *testing.T) {
-	upsert = MockUpsert
+	save = MockSave
 
 	a, err := CreateAlert(SampleAlert)
 	assert.Equal(t, a.Name, SampleAlert.Name, "Create should return OK for valid return")
@@ -25,7 +14,7 @@ func TestWhenIInsertValidAlert_ShouldReturnOK(t *testing.T) {
 }
 
 func TestWhenIInsertAlertWithoutName_ShouldReturnError(t *testing.T) {
-	upsert = MockUpsert
+	save = MockSave
 	alertWithoutName := SampleAlert
 	alertWithoutName.Name = ""
 
@@ -35,7 +24,7 @@ func TestWhenIInsertAlertWithoutName_ShouldReturnError(t *testing.T) {
 }
 
 func TestWhenIInsertAlertWithoutOwnerID_ShouldReturnError(t *testing.T) {
-	upsert = MockUpsert
+	save = MockSave
 	alertWithoutOwnerID := SampleAlert
 	alertWithoutOwnerID.OwnerID = -2
 
@@ -45,7 +34,7 @@ func TestWhenIInsertAlertWithoutOwnerID_ShouldReturnError(t *testing.T) {
 }
 
 func TestWhenIInsertAlertWithNameLengthIsMoreThanMax_ShouldReturnError(t *testing.T) {
-	upsert = MockUpsert
+	save = MockSave
 	alert := SampleAlert
 	alert.Name = "ayse jkajshdkjashdjsahd kashdjashdkjahsdkjhaskjdhaksjhdkjashd jashdkjahsdkjahsdjhsd"
 
@@ -55,7 +44,7 @@ func TestWhenIInsertAlertWithNameLengthIsMoreThanMax_ShouldReturnError(t *testin
 }
 
 func TestWhenIInsertTurkishCharacterForCriteria_ShouldReturnOk(t *testing.T) {
-	upsert = MockUpsert
+	save = MockSave
 
 	alert := SampleAlert
 	alert.RequiredCriteria = "ayçe çç öö ğ ü ı şşşşşşş"
@@ -66,7 +55,7 @@ func TestWhenIInsertTurkishCharacterForCriteria_ShouldReturnOk(t *testing.T) {
 }
 
 func TestWhenIInsertNonAlphanumericCharacterForCriteria_ShouldReturnError(t *testing.T) {
-	upsert = MockUpsert
+	save = MockSave
 	alert := SampleAlert
 	alert.RequiredCriteria = ">>> < | ~~~ ]"
 
@@ -76,7 +65,7 @@ func TestWhenIInsertNonAlphanumericCharacterForCriteria_ShouldReturnError(t *tes
 }
 
 func TestWhenIInsertRequiredCriteriaLongerThan140_ShouldReturnError(t *testing.T) {
-	upsert = MockUpsert
+	save = MockSave
 	alert := SampleAlert
 	alert.RequiredCriteria = "aaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqw"
 
@@ -86,7 +75,7 @@ func TestWhenIInsertRequiredCriteriaLongerThan140_ShouldReturnError(t *testing.T
 }
 
 func TestWhenIInsertNiceToHaveCriteriaLongerThan140_ShouldReturnError(t *testing.T) {
-	upsert = MockUpsert
+	save = MockSave
 	alert := SampleAlert
 	alert.NiceToHaveCriteria = "aaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqw"
 
@@ -96,7 +85,7 @@ func TestWhenIInsertNiceToHaveCriteriaLongerThan140_ShouldReturnError(t *testing
 }
 
 func TestWhenIInsertExcludedCriteriaLongerThan140_ShouldReturnError(t *testing.T) {
-	upsert = MockUpsert
+	save = MockSave
 	alert := SampleAlert
 	alert.ExcludedCriteria = "aaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqw"
 
@@ -106,11 +95,28 @@ func TestWhenIInsertExcludedCriteriaLongerThan140_ShouldReturnError(t *testing.T
 }
 
 func TestWhenIInsertAlertWithInvalidThreshold_ShouldReturnError(t *testing.T) {
-	upsert = MockUpsert
+	save = MockSave
 	alert := SampleAlert
 	alert.Threshold = 2000000
 
 	a, err := CreateAlert(alert)
 	assert.EqualError(t, err, "Validation failed", "Create alert with greater than max valued threshold should return error")
 	assert.Equal(t, Alert{}, a, "Create alert with greater than max valued threshold should return error")
+}
+
+func TestWhenIProvideAlertId_ShouldReturnSampleAlert(t *testing.T) {
+	find = MockFind
+	id := SampleAlert.ID
+	a, err := FindAlert(id.String())
+
+	assert.Equal(t, err, nil, "Find alert returns nil error when id provided")
+	assert.Equal(t, SampleAlert.Name, a.Name, "Find alert by id should return alert when id provided")
+}
+
+func TestWhenIProvideEmptyAlertId_ShouldReturnError(t *testing.T) {
+	find = MockFind
+	id := ""
+	_, err := FindAlert(id)
+
+	assert.EqualError(t, err, "id should be provided", "Find alert by id should return error when id not provided")
 }

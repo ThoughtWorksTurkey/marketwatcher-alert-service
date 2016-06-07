@@ -6,11 +6,19 @@ import (
 	"strings"
 
 	"github.com/hailocab/gocassa"
+	"github.com/gocql/gocql"
 )
 
 var alertTable gocassa.Table
 var cassandraClusterNodes = strings.Split(os.Getenv("CASSANDRA_NODES"), ",")
 var cassandraKeySpaceName = "marketwatcher"
+var session *gocql.Session
+
+func init() {
+	cluster := gocql.NewCluster("192.168.1.200")
+	cluster.Keyspace = cassandraKeySpaceName
+	session, _ = cluster.CreateSession()
+}
 
 func getAlertTable() gocassa.Table {
 	if alertTable != nil {
@@ -32,11 +40,12 @@ func getAlertTable() gocassa.Table {
 	return alertTable
 }
 
-var find = func(id int) (Alert, error) {
+var find = func(id gocql.UUID) (Alert, error) {
 	result := Alert{}
 
-	if err := getAlertTable().Where(gocassa.Eq("id", id)).ReadOne(&result).Run(); err != nil {
-		return Alert{}, err
+	if err := session.Query(`SELECT id, owner_id, name, required_criteria, nice_to_have_criteria, excluded_criteria, threshold, status FROM alert__id__ WHERE id = ?`,
+		id).Consistency(gocql.One).Scan(&result.ID, &result.OwnerID, &result.Name, &result.RequiredCriteria, &result.NiceToHaveCriteria, &result.ExcludedCriteria, &result.Threshold, &result.Status); err != nil {
+		log.Fatal(err)
 	}
 
 	return result, nil
@@ -52,7 +61,7 @@ var findByOwner = func(ownerID int) ([]Alert, error) {
 }
 
 // Upsert updates or inserts to cassandra
-var upsert = func(a Alert) (Alert, error) {
+var save = func(a Alert) (Alert, error) {
 	if err := getAlertTable().Set(a).Run(); err != nil {
 		return Alert{}, err
 	}

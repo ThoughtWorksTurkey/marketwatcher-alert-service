@@ -39,7 +39,20 @@ func (alertReceiver *AlertController) PostNewAlert() {
 		alertReceiver.Data["json"] = createdAlert
 		alertReceiver.ServeJSONWithStatus(200)
 	}
+}
 
+func (alertReceiver *AlertController) GetAlertById() {
+	alertId := alertReceiver.Ctx.Input.Param(":id")
+
+	alert, err := FindAlert(alertId)
+
+	if err != nil {
+		alertReceiver.Data["error"] = err
+		alertReceiver.ServeJSONWithStatus(404)
+	} else {
+		alertReceiver.Data["json"] = alert
+		alertReceiver.ServeJSONWithStatus(200)
+	}
 }
 
 // ServeJSONWithStatus decorates responses

@@ -7,6 +7,7 @@ import (
 
 func main() {
 	beego.Router("/alerts/owner_id/:owner_id([0-9]+)", &AlertController{}, "get:GetAlertsOfOwner")
+	beego.Router("/alerts/id/:id", &AlertController{}, "get:GetAlertById")
 	beego.Router("/alerts", &AlertController{}, "post:PostNewAlert")
 
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
