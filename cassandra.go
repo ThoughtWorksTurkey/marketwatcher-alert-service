@@ -52,16 +52,19 @@ var find = func(id gocql.UUID) (Alert, error) {
 }
 
 var findByOwner = func(ownerID int) ([]Alert, error) {
-	results := []Alert{}
-	if err := getAlertTable().Where(gocassa.Eq("owner_id", ownerID)).Read(&results).Run(); err != nil {
-		return []Alert{}, err
+	result := Alert{}
+	alerts := []Alert{}
+	iter := session.Query(`SELECT id, owner_id, name, required_criteria, nice_to_have_criteria, excluded_criteria, threshold, status FROM alert__id__ WHERE owner_id = 1`).Iter()
+	for iter.Scan(&result.ID, &result.OwnerID, &result.Name, &result.RequiredCriteria, &result.NiceToHaveCriteria, &result.ExcludedCriteria, &result.Threshold, &result.Status) {
+		alerts = append(alerts, result);
 	}
-
-	return results, nil
+	err := iter.Close()
+	return alerts, err
 }
 
 // Upsert updates or inserts to cassandra
 var save = func(a Alert) (Alert, error) {
+	a.ID = GenerateAlertId()
 	if err := getAlertTable().Set(a).Run(); err != nil {
 		return Alert{}, err
 	}
