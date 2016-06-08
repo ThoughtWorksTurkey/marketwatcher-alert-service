@@ -18,5 +18,5 @@ func MockSave(a Alert) (Alert, error) {
 }
 
 func MockFind(id gocql.UUID) (Alert, error) {
-	return SampleAlert, nil;
+	return SampleAlert, nil
 }

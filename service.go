@@ -6,8 +6,9 @@ import (
 )
 
 var CreateAlert = func(a Alert) (Alert, error) {
-	if !a.validate() {
-		return Alert{}, errors.New("Validation failed")
+	validationErr := a.validate()
+	if validationErr != nil {
+		return a, validationErr
 	}
 	a, err := save(a)
 	return a, err
@@ -19,8 +20,8 @@ var ListAlerts = func(ownerID int) ([]Alert, error) {
 
 var FindAlert = func(id string) (Alert, error) {
 	uuid, err := gocql.ParseUUID(id)
-	if (err != nil) {
-		return Alert {}, errors.New("id should be provided")
+	if err != nil {
+		return Alert{}, errors.New("id should be provided")
 	} else {
 		return find(uuid)
 	}

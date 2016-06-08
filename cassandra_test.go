@@ -3,9 +3,9 @@
 package main
 
 import (
+	"github.com/gocql/gocql"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"github.com/gocql/gocql"
 )
 
 var generatedId gocql.UUID
@@ -17,8 +17,8 @@ func TestWhenIUpsert_ShoudReturnSucessful(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestFindById_ShouldReturnSuccessful(t *testing.T){
- 	alert,err := find(generatedId)
+func TestFindById_ShouldReturnSuccessful(t *testing.T) {
+	alert, err := find(generatedId)
 	assert.Equal(t, alert.Name, "Test Alert", "Find should return OK")
 	assert.NoError(t, err)
 }
