@@ -4,16 +4,19 @@ import (
 	"log"
 	"github.com/gocql/gocql"
 	"strconv"
+	"strings"
+	"time"
+	"os"
 )
 
 var cassandraKeySpaceName = "marketwatcher"
 var session *gocql.Session
 
 func init() {
-	/*cluster := gocql.NewCluster(strings.Split(os.Getenv("CASSANDRA_NODES"), ",")...)
+	cluster := gocql.NewCluster(strings.Split(os.Getenv("CASSANDRA_NODES"), ",")...)
 	cluster.Keyspace = cassandraKeySpaceName
 	cluster.Timeout = 1 * time.Second
-	session, _ = cluster.CreateSession()*/
+	session, _ = cluster.CreateSession()
 }
 
 var find = func(id gocql.UUID) (Alert, error) {
