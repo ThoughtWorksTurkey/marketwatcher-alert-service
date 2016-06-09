@@ -3,13 +3,16 @@ package main
 import (
 	"encoding/json"
 	"strconv"
-
 	"github.com/astaxie/beego"
 )
 
 // AlertController is a controller
 type AlertController struct {
 	beego.Controller
+}
+
+type AlertErrorMessage struct {
+	Message                 string `json:"alert_error_message"`
 }
 
 // Get is a receiver method
@@ -33,7 +36,7 @@ func (alertReceiver *AlertController) PostNewAlert() {
 	json.Unmarshal(alertReceiver.Ctx.Input.RequestBody, &alert)
 	createdAlert, err := CreateAlert(alert)
 	if err != nil {
-		alertReceiver.Data["error"] = err
+		alertReceiver.Data["json"] = AlertErrorMessage{ Message: err.Error()}
 		alertReceiver.ServeJSONWithStatus(400)
 	} else {
 		alertReceiver.Data["json"] = createdAlert
@@ -47,7 +50,7 @@ func (alertReceiver *AlertController) GetAlertById() {
 	alert, err := FindAlert(alertId)
 
 	if err != nil {
-		alertReceiver.Data["error"] = err
+		alertReceiver.Ctx.WriteString(err.Error())
 		alertReceiver.ServeJSONWithStatus(404)
 	} else {
 		alertReceiver.Data["json"] = alert

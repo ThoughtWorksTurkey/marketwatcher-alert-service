@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 	"strings"
-
+	"time"
 	"github.com/gocql/gocql"
 	"strconv"
 )
@@ -15,6 +15,7 @@ var session *gocql.Session
 func init() {
 	cluster := gocql.NewCluster(strings.Split(os.Getenv("CASSANDRA_NODES"), ",")...)
 	cluster.Keyspace = cassandraKeySpaceName
+	cluster.Timeout = 1 * time.Second
 	session, _ = cluster.CreateSession()
 }
 
