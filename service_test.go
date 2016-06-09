@@ -49,10 +49,9 @@ func TestWhenIInsertTurkishCharacterForCriteria_ShouldReturnOk(t *testing.T) {
 
 	alert := SampleAlert
 	alert.RequiredCriteria = "ayçe çç öö ğ ü ı şşşşşşş"
-
-	a, err := CreateAlert(SampleAlert)
+	a, err := CreateAlert(alert)
 	assert.Equal(t, SampleAlert.Name, a.Name, "Create alert with turkish character for criteria should return OK")
-	assert.Nil(t, err, nil, "Create alert with turkish character for criteria should not return OK")
+	assert.Equal(t, nil, err, "Create alert with turkish character for criteria should not return OK")
 }
 
 func TestWhenIInsertNonAlphanumericCharacterForCriteria_ShouldReturnError(t *testing.T) {
@@ -120,4 +119,13 @@ func TestWhenIProvideEmptyAlertId_ShouldReturnError(t *testing.T) {
 	_, err := FindAlert(id)
 
 	assert.Equal(t, "id should be provided", err.Error(), "Find alert by id should return error when id not provided")
+}
+
+func TestWhenCriteriaIsLongerThanMaxWithComma_ShouldReturnOk(t *testing.T) {
+	save = MockSave
+	alert := SampleAlert
+	alert.ExcludedCriteria = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789,"
+
+	_, err := CreateAlert(alert)
+	assert.Equal(t, err, nil, "Create alert with criteria longer than max with comma should be ok")
 }

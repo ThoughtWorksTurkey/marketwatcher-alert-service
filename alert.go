@@ -27,7 +27,7 @@ const (
 	VALIDATION_MESSAGE_OWNER_ID                      = "Validation failed: ownerId!"
 )
 
-var alphanumericRegex = regexp.MustCompile("^[a-zA-Z0-9_\\s]*$")
+var alphanumericRegex = regexp.MustCompile("^[a-zA-Z0-9şŞıİçÇöÖüÜğĞ_\\s]*$")
 var validationMessage string
 
 // Alert is the primary entity of this microservice
@@ -87,7 +87,8 @@ func validateRequiredCriteria(a *Alert) error {
 	if a.RequiredCriteria == "" {
 		return errors.New(VALIDATION_MESSAGE_REQUIRED_CRITERIA_EMPTY)
 	}
-	if len(a.RequiredCriteria) > MAX_LENGTH_FOR_CRITERIA {
+	s := strings.Replace(a.RequiredCriteria, ",", "", -1)
+	if len(s) > MAX_LENGTH_FOR_CRITERIA {
 		return errors.New(VALIDATION_MESSAGE_REQUIRED_CRITERIA_LENGTH + strconv.Itoa(MAX_LENGTH_FOR_CRITERIA))
 	}
 	return validateCriteriaPhrases(a.RequiredCriteria)
@@ -97,7 +98,8 @@ func validateNiceToHaveCriteria(a string) error {
 	if a == "" {
 		return nil
 	}
-	if len(a) > MAX_LENGTH_FOR_CRITERIA {
+	s := strings.Replace(a, ",", "", -1)
+	if len(s) > MAX_LENGTH_FOR_CRITERIA {
 		return errors.New(VALIDATION_MESSAGE_NICE_TO_HAVE_CRITERIA_LENGTH + strconv.Itoa(MAX_LENGTH_FOR_CRITERIA))
 	}
 	return validateCriteriaPhrases(a)
@@ -107,7 +109,8 @@ func validateExcludedCriteria(a string) error {
 	if a == "" {
 		return nil
 	}
-	if len(a) > MAX_LENGTH_FOR_CRITERIA {
+	s := strings.Replace(a, ",", "", -1)
+	if len(s) > MAX_LENGTH_FOR_CRITERIA {
 		return errors.New(VALIDATION_MESSAGE_EXCLUDED_CRITERIA_LENGTH + strconv.Itoa(MAX_LENGTH_FOR_CRITERIA))
 	}
 	return validateCriteriaPhrases(a)
