@@ -2,7 +2,7 @@ CREATE KEYSPACE marketwatcher WITH REPLICATION = { 'class' : 'SimpleStrategy', '
 
 USE marketwatcher;
 
-CREATE TABLE alert__id__ (
+CREATE TABLE alert (
   id timeuuid PRIMARY KEY,
   name varchar,
   required_criteria text,
@@ -13,4 +13,4 @@ CREATE TABLE alert__id__ (
   threshold int
 );
 
-CREATE INDEX by_owner_id ON alert__id__(owner_id);
+CREATE INDEX by_owner_id ON alert(owner_id);
