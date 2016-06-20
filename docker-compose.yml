@@ -11,3 +11,5 @@ db:
   image: cassandra:2.2
   ports:
     - "9042:9042"
+  volumes:
+    - /schema:/data
