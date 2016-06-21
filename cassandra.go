@@ -1,22 +1,57 @@
 package main
 
 import (
-	"log"
 	"github.com/gocql/gocql"
+	"io/ioutil"
+	"log"
+	"os"
 	"strconv"
 	"strings"
 	"time"
-	"os"
 )
 
 var cassandraKeySpaceName = "marketwatcher"
 var session *gocql.Session
+var cassandraConnectTimeout = 10 * time.Second
+var initialCqlFile = "/data/init.cql"
 
 func init() {
 	cluster := gocql.NewCluster(strings.Split(os.Getenv("CASSANDRA_NODES"), ",")...)
+	cluster.Timeout = cassandraConnectTimeout
+
+	executeInitialQuery(cluster)
+
 	cluster.Keyspace = cassandraKeySpaceName
-	cluster.Timeout = 1 * time.Second
-	session, _ = cluster.CreateSession()
+
+	var sessionErr error
+	session, sessionErr = cluster.CreateSession()
+	if sessionErr != nil {
+		log.Fatal("Could NOT create Cassandra session: ", sessionErr)
+	}
+}
+
+func executeInitialQuery(cl *gocql.ClusterConfig) {
+	initialBytes, err := ioutil.ReadFile(initialCqlFile)
+	initialQuery := string(initialBytes)
+
+	initSession, err := cl.CreateSession()
+	defer initSession.Close()
+	if err != nil {
+		log.Fatal("Could NOT create a session for initial CQL file: ", err)
+	}
+
+	for _, l := range strings.Split(initialQuery, ";") {
+		l = strings.TrimSpace(l)
+		if l == "" {
+			continue
+		}
+
+		log.Println("Executing Initial query: ", l)
+
+		if err = initSession.Query(l).Exec(); err != nil {
+			log.Fatal("Could NOT execute initial query: ", err)
+		}
+	}
 }
 
 var find = func(id gocql.UUID) (Alert, error) {
