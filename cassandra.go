@@ -59,7 +59,7 @@ var find = func(id gocql.UUID) (Alert, error) {
 
 	if err := session.Query(`SELECT id, owner_id, name, required_criteria, nice_to_have_criteria, excluded_criteria, threshold, status FROM alert WHERE id = ?`,
 		id).Consistency(gocql.One).Scan(&result.ID, &result.OwnerID, &result.Name, &result.RequiredCriteria, &result.NiceToHaveCriteria, &result.ExcludedCriteria, &result.Threshold, &result.Status); err != nil {
-		log.Fatal(err)
+		log.Println("Find returns no records, check given parameters: ", err)
 	}
 
 	return result, nil
