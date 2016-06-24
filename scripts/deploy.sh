@@ -20,6 +20,15 @@ fi
 # ecs-cli up --keypair marketwatcher --capability-iam --size 1 --instance-type t2.medium
 
 COMPOSE_PROJECT_NAME=marketwatcher-alert-service \
+ecs-cli compose --file docker-compose.yml service down
+
+DOWN_RESULT=$?
+if [ $DOWN_RESULT -ne 0 ]; then
+	echo "Could not bring service DOWN in ECS"
+	exit $DOWN_RESULT
+fi
+
+COMPOSE_PROJECT_NAME=marketwatcher-alert-service \
 ecs-cli compose --file docker-compose.yml service up
 
 UP_RESULT=$?
