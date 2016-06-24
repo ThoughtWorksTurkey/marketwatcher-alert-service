@@ -19,6 +19,7 @@ fi
 
 # ecs-cli up --keypair marketwatcher --capability-iam --size 1 --instance-type t2.medium
 
+COMPOSE_PROJECT_NAME=marketwatcher-alert-service \
 ecs-cli compose --file docker-compose.yml service down
 
 DOWN_RESULT=$?
