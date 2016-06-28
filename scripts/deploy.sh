@@ -3,6 +3,8 @@
 DIR=`dirname $(readlink -f $0)`
 OLDPWD=`pwd`
 
+export COMPOSE_PROJECT_NAME=marketwatcher-alert-service
+
 cd $DIR/../
 
 ecs-cli configure \
@@ -17,9 +19,6 @@ if [ $CONFIGURE_RESULT -ne 0 ]; then
 	exit $CONFIGURE_RESULT
 fi
 
-# ecs-cli up --keypair marketwatcher --capability-iam --size 1 --instance-type t2.medium
-
-COMPOSE_PROJECT_NAME=marketwatcher-alert-service \
 ecs-cli compose --file docker-compose.yml service down
 
 DOWN_RESULT=$?
@@ -28,7 +27,8 @@ if [ $DOWN_RESULT -ne 0 ]; then
 	exit $DOWN_RESULT
 fi
 
-COMPOSE_PROJECT_NAME=marketwatcher-alert-service \
+sleep 10
+
 ecs-cli compose --file docker-compose.yml service up
 
 UP_RESULT=$?
