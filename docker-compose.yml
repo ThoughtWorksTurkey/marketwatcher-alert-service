@@ -5,7 +5,7 @@ alerts:
   links:
     - "db"
   ports:
-    - "8000:8000"
+    - "10100:10100"
   entrypoint:
     - "start.sh"
 
