@@ -20,3 +20,7 @@ func MockSave(a Alert) (Alert, error) {
 func MockFind(id gocql.UUID) (Alert, error) {
 	return SampleAlert, nil
 }
+
+func MockTriggerIngestion(a Alert) (error) {
+	return nil
+}

@@ -8,6 +8,7 @@ import (
 
 func TestWhenIInsertValidAlert_ShouldReturnOK(t *testing.T) {
 	save = MockSave
+	triggerIngestion = MockTriggerIngestion
 
 	a, err := CreateAlert(SampleAlert)
 	assert.Equal(t, SampleAlert.Name, a.Name, "Create should return OK for valid return")
@@ -16,6 +17,8 @@ func TestWhenIInsertValidAlert_ShouldReturnOK(t *testing.T) {
 
 func TestWhenIInsertAlertWithoutName_ShouldReturnError(t *testing.T) {
 	save = MockSave
+	triggerIngestion = MockTriggerIngestion
+
 	alertWithoutName := SampleAlert
 	alertWithoutName.Name = ""
 
@@ -26,6 +29,8 @@ func TestWhenIInsertAlertWithoutName_ShouldReturnError(t *testing.T) {
 
 func TestWhenIInsertAlertWithNameLengthIsMoreThanMax_ShouldReturnError(t *testing.T) {
 	save = MockSave
+	triggerIngestion = MockTriggerIngestion
+
 	alert := SampleAlert
 	alert.Name = "ayse jkajshdkjashdjsahd kashdjashdkjahsdkjhaskjdhaksjhdkjashd jashdkjahsdkjahsdjhsd"
 
@@ -36,6 +41,8 @@ func TestWhenIInsertAlertWithNameLengthIsMoreThanMax_ShouldReturnError(t *testin
 
 func TestWhenIInsertAlertWithoutOwnerID_ShouldReturnError(t *testing.T) {
 	save = MockSave
+	triggerIngestion = MockTriggerIngestion
+
 	alertWithoutOwnerID := SampleAlert
 	alertWithoutOwnerID.OwnerID = -2
 
@@ -46,6 +53,7 @@ func TestWhenIInsertAlertWithoutOwnerID_ShouldReturnError(t *testing.T) {
 
 func TestWhenIInsertTurkishCharacterForCriteria_ShouldReturnOk(t *testing.T) {
 	save = MockSave
+	triggerIngestion = MockTriggerIngestion
 
 	alert := SampleAlert
 	alert.RequiredCriteria = "ayçe çç öö ğ ü ı şşşşşşş"
@@ -56,6 +64,8 @@ func TestWhenIInsertTurkishCharacterForCriteria_ShouldReturnOk(t *testing.T) {
 
 func TestWhenIInsertNonAlphanumericCharacterForCriteria_ShouldReturnError(t *testing.T) {
 	save = MockSave
+	triggerIngestion = MockTriggerIngestion
+
 	alert := SampleAlert
 	alert.RequiredCriteria = ">>> < | ~~~ ]"
 
@@ -66,6 +76,8 @@ func TestWhenIInsertNonAlphanumericCharacterForCriteria_ShouldReturnError(t *tes
 
 func TestWhenIInsertRequiredCriteriaLongerThan140_ShouldReturnError(t *testing.T) {
 	save = MockSave
+	triggerIngestion = MockTriggerIngestion
+
 	alert := SampleAlert
 	alert.RequiredCriteria = "aaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqw"
 
@@ -76,6 +88,8 @@ func TestWhenIInsertRequiredCriteriaLongerThan140_ShouldReturnError(t *testing.T
 
 func TestWhenIInsertNiceToHaveCriteriaLongerThan140_ShouldReturnError(t *testing.T) {
 	save = MockSave
+	triggerIngestion = MockTriggerIngestion
+
 	alert := SampleAlert
 	alert.NiceToHaveCriteria = "aaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqw"
 
@@ -86,6 +100,8 @@ func TestWhenIInsertNiceToHaveCriteriaLongerThan140_ShouldReturnError(t *testing
 
 func TestWhenIInsertExcludedCriteriaLongerThan140_ShouldReturnError(t *testing.T) {
 	save = MockSave
+	triggerIngestion = MockTriggerIngestion
+
 	alert := SampleAlert
 	alert.ExcludedCriteria = "aaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqwaaaaaaaqw"
 
@@ -96,6 +112,8 @@ func TestWhenIInsertExcludedCriteriaLongerThan140_ShouldReturnError(t *testing.T
 
 func TestWhenIInsertAlertWithInvalidThreshold_ShouldReturnError(t *testing.T) {
 	save = MockSave
+	triggerIngestion = MockTriggerIngestion
+
 	alert := SampleAlert
 	alert.Threshold = 2000000
 
@@ -113,19 +131,21 @@ func TestWhenIProvideAlertId_ShouldReturnSampleAlert(t *testing.T) {
 	assert.Equal(t, SampleAlert.Name, a.Name, "Find alert by id should return alert when id provided")
 }
 
+func TestWhenCriteriaIsLongerThanMaxWithComma_ShouldReturnOk(t *testing.T) {
+	save = MockSave
+	triggerIngestion = MockTriggerIngestion
+
+	alert := SampleAlert
+	alert.ExcludedCriteria = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789,"
+
+	_, err := CreateAlert(alert)
+	assert.Equal(t, err, nil, "Create alert with criteria longer than max with comma should be ok")
+}
+
 func TestWhenIProvideEmptyAlertId_ShouldReturnError(t *testing.T) {
 	find = MockFind
 	id := ""
 	_, err := FindAlert(id)
 
 	assert.Equal(t, "id should be provided", err.Error(), "Find alert by id should return error when id not provided")
-}
-
-func TestWhenCriteriaIsLongerThanMaxWithComma_ShouldReturnOk(t *testing.T) {
-	save = MockSave
-	alert := SampleAlert
-	alert.ExcludedCriteria = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789,"
-
-	_, err := CreateAlert(alert)
-	assert.Equal(t, err, nil, "Create alert with criteria longer than max with comma should be ok")
 }

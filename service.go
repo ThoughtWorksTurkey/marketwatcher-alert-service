@@ -10,7 +10,14 @@ var CreateAlert = func(a Alert) (Alert, error) {
 	if validationErr != nil {
 		return a, validationErr
 	}
-	a, err := save(a)
+	err := triggerIngestion(a)
+	if (err != nil) {
+		return a, err
+	}
+	a, err = save(a)
+	if (err != nil) {
+		err = errors.New("Alert could not be created")
+	}
 	return a, err
 }
 
