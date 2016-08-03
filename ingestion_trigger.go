@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 	"errors"
 	"strconv"
@@ -13,8 +12,6 @@ var AlertNotCreatedErr = "Alert could not be created"
 
 var triggerIngestion = func(a Alert) error {
 	url := IngestionUrl
-	fmt.Println("URL:>", url)
-
 	alertBytes := []byte(`{"name":"` + a.Name + `","requiredCriteria":"` + a.RequiredCriteria + `"}`)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(alertBytes))
@@ -27,7 +24,7 @@ var triggerIngestion = func(a Alert) error {
 	}
 	defer resp.Body.Close()
 
-	if (resp.Status == strconv.Itoa(http.StatusOK)) {
+	if (resp.Status == (strconv.Itoa(http.StatusOK) + " OK")) {
 		return nil
 	} else {
 		return errors.New(AlertNotCreatedErr)
