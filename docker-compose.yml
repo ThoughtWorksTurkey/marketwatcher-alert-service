@@ -1,7 +1,7 @@
 alerts:
   image: thoughtworksturkey/marketwatcher-alert-service
   environment:
-    - CASSANDRA_NODES=db
+      - CASSANDRA_NODES=db:42001
   links:
     - "db"
   ports:
