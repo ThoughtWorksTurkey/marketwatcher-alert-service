@@ -1,17 +1,17 @@
 package main
 
 import (
-	"bytes"
-	"net/http"
-	"errors"
-	"strconv"
+    "bytes"
+    "net/http"
+    "errors"
+    "strconv"
+    "os"
 )
 
-var IngestionUrl = "http://localhost:9000/init"
 var AlertNotCreatedErr = "Alert could not be created"
 
 var triggerIngestion = func(a Alert) error {
-	url := IngestionUrl
+	url := os.Getenv("DATA_INGESTION_URL")
 	alertBytes := []byte(`{"name":"` + a.Name + `","requiredCriteria":"` + a.RequiredCriteria + `"}`)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(alertBytes))
