@@ -1,14 +1,14 @@
 package main
 
 import (
-    "bytes"
-    "net/http"
-    "errors"
-    "strconv"
-    "os"
+	"bytes"
+	"net/http"
+	"errors"
+	"strconv"
+	"os"
 )
 
-var AlertNotCreatedErr = "Alert could not be created"
+var AlertNotCreatedErr = "Alert was not created"
 
 var triggerIngestion = func(a Alert) error {
 	url := os.Getenv("DATA_INGESTION_URL")
