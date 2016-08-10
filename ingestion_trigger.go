@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var AlertNotCreatedErr = "Alert was not created"
+var AlertNotCreatedErr = "Aalert was not created"
 
 var triggerIngestion = func(a Alert) error {
 	url := os.Getenv("DATA_INGESTION_URL")
