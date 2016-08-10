@@ -5,16 +5,16 @@ import (
 	"net/http"
 	"errors"
 	"strconv"
-	"os"
+    "os"
 )
 
-var AlertNotCreatedErr = "Aalert was not created"
+var IngestionUrl = os.Getenv("DATA_INGESTION_URL")
+var AlertNotCreatedErr = "Alert could not be created"
 
 var triggerIngestion = func(a Alert) error {
-	url := os.Getenv("DATA_INGESTION_URL")
 	alertBytes := []byte(`{"name":"` + a.Name + `","requiredCriteria":"` + a.RequiredCriteria + `"}`)
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(alertBytes))
+	req, err := http.NewRequest("POST", IngestionUrl, bytes.NewBuffer(alertBytes))
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
