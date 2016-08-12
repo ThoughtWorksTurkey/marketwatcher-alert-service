@@ -1,16 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
 	"runtime"
-	"fmt"
 	"testing"
-	"bytes"
 )
 
 var alertsCreateUrl = "/api/alerts"
@@ -45,7 +45,6 @@ func stubbedIngestionServiceSuccess() *httptest.Server {
 		fmt.Fprintln(w, "success")
 	}))
 }
-
 
 func TestWhenIngestionServiceReturnsBadRequest_alertShouldNotBeCreated(t *testing.T) {
 	ingestionServer := stubbedIngestionServiceForBadRequest()

@@ -2,17 +2,17 @@ package main
 
 import (
 	"bytes"
-	"net/http"
 	"errors"
+	"net/http"
+	"os"
 	"strconv"
-    "os"
 )
 
 var IngestionUrl = os.Getenv("DATA_INGESTION_URL")
 var AlertNotCreatedErr = "Alert could not be created"
 
 var triggerIngestion = func(a Alert) error {
-	alertBytes := []byte(`{"name":"` + a.Name + `","requiredCriteria":"` + a.RequiredCriteria + `"}`)
+	alertBytes := []byte(`{"id":` + a.ID.String() + `","name":"` + a.Name + `","requiredCriteria":"` + a.RequiredCriteria + `"}`)
 
 	req, err := http.NewRequest("POST", IngestionUrl, bytes.NewBuffer(alertBytes))
 	req.Header.Set("Content-Type", "application/json")
@@ -24,7 +24,7 @@ var triggerIngestion = func(a Alert) error {
 	}
 	defer resp.Body.Close()
 
-	if (resp.Status == (strconv.Itoa(http.StatusOK) + " OK")) {
+	if resp.Status == (strconv.Itoa(http.StatusOK) + " OK") {
 		return nil
 	} else {
 		return errors.New(AlertNotCreatedErr)
