@@ -53,7 +53,6 @@ var save = func(a Alert) (Alert, error) {
 		connectToCassandra()
 		connectionEstablished = true
 	}
-	a.ID = GenerateAlertId()
 
 	if err := session.Query(`INSERT INTO alert (id, owner_id, name, required_criteria, nice_to_have_criteria, excluded_criteria, threshold, status)
 	VALUES (?,?,?,?,?,?,?,?)`, a.ID, a.OwnerID, a.Name, a.RequiredCriteria, a.NiceToHaveCriteria, a.ExcludedCriteria, a.Threshold, a.Status).Exec(); err != nil {
