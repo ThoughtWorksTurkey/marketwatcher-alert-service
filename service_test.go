@@ -12,7 +12,7 @@ func TestWhenIInsertValidAlert_ShouldReturnOK(t *testing.T) {
 
 	a, err := CreateAlert(SampleAlert)
 	assert.Equal(t, SampleAlert.Name, a.Name, "Create should return OK for valid return")
-	assert.Equal(t, nil, err, "Create should not return OK for valid return")
+	assert.Equal(t, nil, err, "Create should not return error for valid return")
 }
 
 func TestWhenIInsertAlertWithoutName_ShouldReturnError(t *testing.T) {
