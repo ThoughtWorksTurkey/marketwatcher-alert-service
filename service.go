@@ -10,6 +10,9 @@ var CreateAlert = func(a Alert) (Alert, error) {
 	if validationErr != nil {
 		return a, validationErr
 	}
+
+	a.ID = GenerateAlertId()
+
 	err := triggerIngestion(a)
 	if err != nil {
 		return a, err
