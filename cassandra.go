@@ -101,9 +101,9 @@ func connectToCassandra() error {
 	}
 
 	executeInitialQuery(initSession, initialQuery())
-    initSession.Close()
+	initSession.Close()
 
-    session, sessionErr = cluster.CreateSession()
+	session, sessionErr = cluster.CreateSession()
 
 	return nil
 }

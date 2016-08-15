@@ -21,7 +21,7 @@ var triggerIngestion = func(a Alert) error {
 	resp, err := client.Do(req)
 
 	if err != nil {
-        return errors.New(IngestionServiceNotReachableErr)
+		return errors.New(IngestionServiceNotReachableErr)
 	}
 	defer resp.Body.Close()
 
