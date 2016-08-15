@@ -1,25 +1,25 @@
 package main
 
 import (
+	"github.com/gocql/gocql"
 	"log"
 	"os"
+	"strings"
 	"testing"
-    "github.com/gocql/gocql"
-    "strings"
 )
 
 func setup() {
 	log.Println("SETTING UP")
 
-    _, testSession := createTestConnection()
+	_, testSession := createTestConnection()
 	session = testSession
-    connectionEstablished = true
+	connectionEstablished = true
 }
 
 func tearDown() {
 	log.Println("TEARING DOWN")
 
-    destroyTestConnection(session)
+	destroyTestConnection(session)
 }
 
 func TestMain(m *testing.M) {
