@@ -1,6 +1,8 @@
 package main
 
-import "github.com/gocql/gocql"
+import (
+	"github.com/gocql/gocql"
+)
 
 var SampleAlert = Alert{
 	ID:                 GenerateAlertId(),
@@ -11,6 +13,19 @@ var SampleAlert = Alert{
 	ExcludedCriteria:   "bad,sucks,not good enough",
 	Threshold:          1000,
 	Status:             ACTIVE,
+}
+
+func createSampleAlert(name string) Alert {
+	return Alert{
+		ID:                 GenerateAlertId(),
+		OwnerID:            1,
+		Name:               name,
+		RequiredCriteria:   "TW,ThoughtWorks,Thought Works,Thoughtworks",
+		NiceToHaveCriteria: "good,best office",
+		ExcludedCriteria:   "bad,sucks,not good enough",
+		Threshold:          1000,
+		Status:             ACTIVE,
+	}
 }
 
 func MockSave(a Alert) (Alert, error) {

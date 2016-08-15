@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"github.com/astaxie/beego"
+	"log"
+	"os"
 	"strconv"
 )
 
@@ -12,7 +14,18 @@ type AlertController struct {
 }
 
 type AlertErrorMessage struct {
-	Message string `json:"alert_error_message"`
+	Message string `json:"message"`
+}
+
+func (alertReceiver *AlertController) ServeErrorWithStatus(httpStatus int, err error) {
+	alertReceiver.ServeErrorWithStatusAndMessage(httpStatus, err, err.Error())
+}
+
+func (alertReceiver *AlertController) ServeErrorWithStatusAndMessage(httpStatus int, err error, message string) {
+	if err != nil {
+		alertReceiver.Data["json"] = AlertErrorMessage{Message: message}
+		alertReceiver.ServeJSONWithStatus(httpStatus)
+	}
 }
 
 // Get is a receiver method
@@ -22,8 +35,7 @@ func (alertReceiver *AlertController) GetAlertsOfOwner() {
 	alerts, err := ListAlerts(requestedOwnerID)
 
 	if err != nil {
-		alertReceiver.Data["error"] = err
-		alertReceiver.ServeJSONWithStatus(404)
+		alertReceiver.ServeErrorWithStatus(404, err)
 	} else {
 		alertReceiver.Data["json"] = alerts
 		alertReceiver.ServeJSONWithStatus(200)
@@ -31,17 +43,38 @@ func (alertReceiver *AlertController) GetAlertsOfOwner() {
 }
 
 // Post is a receiver method
-func (alertReceiver *AlertController) PostNewAlert() {
+func (alertReceiver *AlertController) CreateAlert() {
 	var alert Alert
 	json.Unmarshal(alertReceiver.Ctx.Input.RequestBody, &alert)
-	createdAlert, err := CreateAlert(alert)
-	if err != nil {
-		alertReceiver.Data["json"] = AlertErrorMessage{Message: err.Error()}
-		alertReceiver.ServeJSONWithStatus(400)
-	} else {
-		alertReceiver.Data["json"] = createdAlert
-		alertReceiver.ServeJSONWithStatus(200)
+
+	validationErr := alert.validate()
+
+	if validationErr != nil {
+		alertReceiver.ServeErrorWithStatus(400, validationErr)
+		return
 	}
+
+	alert.ID = GenerateAlertId()
+
+	err := triggerIngestion(alert)
+	if err != nil {
+		log.Println("Could not trigger ingestion service at (" + os.Getenv("DATA_INGESTION_URL") + ")")
+		alertReceiver.ServeErrorWithStatus(500, err)
+		return
+	}
+
+	createdAlert, err := save(alert)
+	if err != nil {
+		if err.Error() == ALERT_NAME_MUST_BE_UNIQUE_PER_OWNER {
+			alertReceiver.ServeErrorWithStatus(409, err)
+		} else {
+			alertReceiver.ServeErrorWithStatus(500, err)
+		}
+		return
+	}
+
+	alertReceiver.Data["json"] = createdAlert
+	alertReceiver.ServeJSONWithStatus(200)
 }
 
 func (alertReceiver *AlertController) GetAlertById() {

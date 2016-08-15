@@ -29,8 +29,8 @@ func init() {
 	apppath, _ := filepath.Abs(filepath.Dir(filepath.Join(file, "/")))
 	beego.BConfig.CopyRequestBody = true
 	beego.TestBeegoInit(apppath)
-	beego.Router(alertsCreateUrl, &AlertController{}, "post:PostNewAlert")
-	save = MockSave
+	beego.Router(alertsCreateUrl, &AlertController{}, "post:CreateAlert")
+
 }
 
 func stubbedIngestionServiceForBadRequest() *httptest.Server {
@@ -47,6 +47,7 @@ func stubbedIngestionServiceSuccess() *httptest.Server {
 }
 
 func TestWhenIngestionServiceReturnsBadRequest_alertShouldNotBeCreated(t *testing.T) {
+	save = MockSave
 	ingestionServer := stubbedIngestionServiceForBadRequest()
 	IngestionUrl = ingestionServer.URL
 	alertBuffer := bytes.NewBuffer([]byte(alertJson))
@@ -63,6 +64,7 @@ func TestWhenIngestionServiceReturnsBadRequest_alertShouldNotBeCreated(t *testin
 }
 
 func TestWhenIngestionServiceUp_alertShouldBeCreated(t *testing.T) {
+	save = MockSave
 	ingestionServer := stubbedIngestionServiceSuccess()
 	IngestionUrl = ingestionServer.URL
 	alertBuffer := bytes.NewBuffer([]byte(alertJson))

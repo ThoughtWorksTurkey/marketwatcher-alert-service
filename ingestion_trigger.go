@@ -6,10 +6,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"reflect"
 	"strconv"
 )
 
 var IngestionUrl = os.Getenv("DATA_INGESTION_URL")
+var IngestionServiceNotReachableErr = "Ingestion service could not be reached"
 var AlertNotCreatedErr = "Alert could not be created"
 
 var triggerIngestion = func(a Alert) error {
@@ -21,7 +23,11 @@ var triggerIngestion = func(a Alert) error {
 	resp, err := client.Do(req)
 
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Println(err)
+		if reflect.TypeOf(err).String() == "*url.Error" {
+			return errors.New(IngestionServiceNotReachableErr)
+		}
+
 		return errors.New(AlertNotCreatedErr)
 	}
 	defer resp.Body.Close()
