@@ -3,10 +3,8 @@ package main
 import (
 	"bytes"
 	"errors"
-	"log"
 	"net/http"
 	"os"
-	"reflect"
 	"strconv"
 )
 
@@ -23,12 +21,7 @@ var triggerIngestion = func(a Alert) error {
 	resp, err := client.Do(req)
 
 	if err != nil {
-		log.Println(err)
-		if reflect.TypeOf(err).String() == "*url.Error" {
-			return errors.New(IngestionServiceNotReachableErr)
-		}
-
-		return errors.New(AlertNotCreatedErr)
+        return errors.New(IngestionServiceNotReachableErr)
 	}
 	defer resp.Body.Close()
 
