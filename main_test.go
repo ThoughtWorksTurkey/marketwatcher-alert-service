@@ -16,12 +16,6 @@ func setup() {
 	connectionEstablished = true
 }
 
-func tearDown() {
-	log.Println("TEARING DOWN")
-
-	destroyTestConnection(session)
-}
-
 func TestMain(m *testing.M) {
 	setup()
 
@@ -30,6 +24,12 @@ func TestMain(m *testing.M) {
 	tearDown()
 
 	os.Exit(retCode)
+}
+
+func tearDown() {
+	log.Println("TEARING DOWN")
+
+	destroyTestConnection(session)
 }
 
 var test_keyspace = "test_keyspace"
@@ -51,7 +51,12 @@ func testInitialQuery() string {
 }
 
 func createTestConnection() (*gocql.ClusterConfig, *gocql.Session) {
-	cassandraNodes := "localhost:9042"
+	cassandraNodes := os.Getenv("CASSANDRA_NODES_TEST")
+
+	if cassandraNodes == "" {
+		log.Fatal("Please specify CASSANDRA_NODES_TEST env variable for testing")
+	}
+
 	cluster := gocql.NewCluster(strings.Split(cassandraNodes, ",")...)
 
 	cluster.Timeout = cassandraConnectTimeout
