@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"github.com/gocql/gocql"
 	"log"
 	"os"
@@ -19,6 +20,8 @@ func setup() {
 }
 
 func TestMain(m *testing.M) {
+	flag.Parse()
+
 	setup()
 
 	retCode := m.Run()
