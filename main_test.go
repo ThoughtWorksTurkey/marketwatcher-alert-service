@@ -11,9 +11,11 @@ import (
 func setup() {
 	log.Println("SETTING UP")
 
-	_, testSession := createTestConnection()
-	session = testSession
-	connectionEstablished = true
+	if !testing.Short() {
+		_, testSession := createTestConnection()
+		session = testSession
+		connectionEstablished = true
+	}
 }
 
 func TestMain(m *testing.M) {
@@ -29,7 +31,9 @@ func TestMain(m *testing.M) {
 func tearDown() {
 	log.Println("TEARING DOWN")
 
-	destroyTestConnection(session)
+	if !testing.Short() {
+		destroyTestConnection(session)
+	}
 }
 
 var test_keyspace = "test_keyspace"
