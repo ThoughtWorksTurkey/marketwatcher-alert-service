@@ -8,3 +8,5 @@ Alert entity service
 go build
 ./alert-service
 ```
+
+Enjoy!
