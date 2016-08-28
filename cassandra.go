@@ -13,7 +13,7 @@ import (
 
 var cassandraKeySpaceName = "marketwatcher"
 var session *gocql.Session
-var cassandraConnectTimeout = 10 * time.Second
+var cassandraConnectTimeout = 120 * time.Second
 var initialCqlFile = "/data/init.cql"
 var connectionEstablished = false
 
@@ -91,8 +91,6 @@ func connectToCassandra() error {
 
 	cluster := gocql.NewCluster(strings.Split(cassandraNodes, ",")...)
 	cluster.Timeout = cassandraConnectTimeout
-	cluster.Keyspace = cassandraKeySpaceName
-	cluster.DisableInitialHostLookup = true
 
 	initSession, sessionErr := cluster.CreateSession()
 
@@ -103,6 +101,7 @@ func connectToCassandra() error {
 	executeInitialQuery(initSession, initialQuery())
 	initSession.Close()
 
+	cluster.Keyspace = cassandraKeySpaceName
 	session, sessionErr = cluster.CreateSession()
 
 	return nil

@@ -84,6 +84,8 @@ func (alertReceiver *AlertController) GetAlertById() {
 
 	if err != nil {
 		alertReceiver.Ctx.WriteString(err.Error())
+		alertReceiver.ServeJSONWithStatus(500)
+	} else if (Alert{}) == alert {
 		alertReceiver.ServeJSONWithStatus(404)
 	} else {
 		alertReceiver.Data["json"] = alert
