@@ -1,0 +1,14 @@
+alerts:
+  image: thoughtworksturkey/marketwatcher-alert-service:alpha
+  environment:
+      - CASSANDRA_NODES=db:9042
+      - DATA_INGESTION_URL=${DATA_INGESTION_URL}
+  links:
+    - "db"
+  ports:
+    - "10100:10100"
+  entrypoint:
+    - "start.sh"
+
+db:
+  image: cassandra:2.2
