@@ -91,6 +91,7 @@ func connectToCassandra() error {
 
 	cluster := gocql.NewCluster(strings.Split(cassandraNodes, ",")...)
 	cluster.Timeout = cassandraConnectTimeout
+    cluster.DisableInitialHostLookup = true
 
 	initSession, sessionErr := cluster.CreateSession()
 
