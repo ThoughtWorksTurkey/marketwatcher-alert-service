@@ -30,7 +30,7 @@ func (alertReceiver *AlertController) ServeErrorWithStatusAndMessage(httpStatus 
 
 // Get is a receiver method
 func (alertReceiver *AlertController) GetAlertsOfOwner() {
-	requestedOwnerID, _ := strconv.Atoi(alertReceiver.Ctx.Input.Param(":owner_id"))
+	requestedOwnerID, _ := strconv.Atoi(alertReceiver.Ctx.Input.Param(":id"))
 
 	alerts, err := ListAlerts(requestedOwnerID)
 
