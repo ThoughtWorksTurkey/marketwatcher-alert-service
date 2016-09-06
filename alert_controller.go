@@ -58,6 +58,7 @@ func (alertReceiver *AlertController) CreateAlert() {
 
 	err := triggerIngestion(alert)
 	if err != nil {
+		log.Printf("ERROR DURING INGESTION TRIGGER: %#v\n", err)
 		log.Println("Could not trigger ingestion service at (" + os.Getenv("DATA_INGESTION_URL") + ")")
 		alertReceiver.ServeErrorWithStatus(500, err)
 		return
