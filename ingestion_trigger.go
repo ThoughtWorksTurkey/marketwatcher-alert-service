@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"log"
+	"net/http/httputil"
 )
 
 var IngestionUrl = os.Getenv("DATA_INGESTION_URL")
@@ -17,16 +18,18 @@ var triggerIngestion = func(a Alert) error {
 	alertBytes := []byte(`{"id":"` + a.ID.String() + `","name":"` + a.Name + `","requiredCriteria":"` + a.RequiredCriteria + `"}`)
 	req, err := http.NewRequest("POST", IngestionUrl, bytes.NewBuffer(alertBytes))
 	req.Header.Set("Content-Type", "application/json")
+	
+	log.Printf("REQUEST: %s\n", httputil.DumpRequestOut(req, true))
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	
-	log.Printf("ERROR DURING INGESTION TRIGGER: %#v\n", resp)
 
 	if err != nil {
 		return errors.New(IngestionServiceNotReachableErr)
 	}
 	defer resp.Body.Close()
+	
+	log.Printf("RESPONSE: %s\n", httputil.DumpResponse(resp, true))
 
 	if resp.Status == (strconv.Itoa(http.StatusOK) + " OK") {
 		return nil
