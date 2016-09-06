@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"log"
 )
 
 var IngestionUrl = os.Getenv("DATA_INGESTION_URL")
@@ -21,6 +22,7 @@ var triggerIngestion = func(a Alert) error {
 	resp, err := client.Do(req)
 
 	if err != nil {
+		log.Printf("ERROR DURING INGESTION TRIGGER: %#v\n", err)
 		return errors.New(IngestionServiceNotReachableErr)
 	}
 	defer resp.Body.Close()
