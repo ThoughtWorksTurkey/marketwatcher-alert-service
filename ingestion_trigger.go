@@ -19,7 +19,9 @@ var triggerIngestion = func(a Alert) error {
 	req, err := http.NewRequest("POST", IngestionUrl, bytes.NewBuffer(alertBytes))
 	req.Header.Set("Content-Type", "application/json")
 	
-	log.Printf("REQUEST: %s\n", httputil.DumpRequestOut(req, true))
+	dumpRequest, err := httputil.DumpRequestOut(req, true)
+	
+	log.Printf("REQUEST: %q\n", dumpRequest)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -29,7 +31,9 @@ var triggerIngestion = func(a Alert) error {
 	}
 	defer resp.Body.Close()
 	
-	log.Printf("RESPONSE: %s\n", httputil.DumpResponse(resp, true))
+	dumpResponse, err := httputil.DumpResponse(resp, true)
+	
+	log.Printf("REQUEST: %q\n", dumpResponse)
 
 	if resp.Status == (strconv.Itoa(http.StatusOK) + " OK") {
 		return nil
