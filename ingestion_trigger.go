@@ -16,6 +16,7 @@ var AlertNotCreatedErr = "Alert could not be created"
 
 var triggerIngestion = func(a Alert) error {
 	alertBytes := []byte(`{"id":"` + a.ID.String() + `","name":"` + a.Name + `","requiredCriteria":"` + a.RequiredCriteria + `"}`)
+	log.Printf("REQUEST: %s\n", IngestionUrl)
 	req, err := http.NewRequest("POST", IngestionUrl, bytes.NewBuffer(alertBytes))
 	req.Header.Set("Content-Type", "application/json")
 	
