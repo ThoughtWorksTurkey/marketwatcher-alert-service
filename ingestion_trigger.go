@@ -20,9 +20,10 @@ var triggerIngestion = func(a Alert) error {
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
+	
+	log.Printf("ERROR DURING INGESTION TRIGGER: %#v\n", resp)
 
 	if err != nil {
-		log.Printf("ERROR DURING INGESTION TRIGGER: %#v\n", err)
 		return errors.New(IngestionServiceNotReachableErr)
 	}
 	defer resp.Body.Close()
