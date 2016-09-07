@@ -10,7 +10,7 @@ import (
 	"net/http/httputil"
 )
 
-var IngestionUrl = os.Getenv("DATA_INGESTION_URL")
+var IngestionUrl = os.Getenv("DATA_INGESTION_URL") + "/init"
 var IngestionServiceNotReachableErr = "Ingestion service could not be reached"
 var AlertNotCreatedErr = "Alert could not be created"
 
